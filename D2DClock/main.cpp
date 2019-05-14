@@ -35,7 +35,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_CREATE:
-        SetLayeredWindowAttributes(m_hwnd, 0, 180, LWA_ALPHA);    // alpha channel
+        SetLayeredWindowAttributes(m_hwnd, 0, 180, LWA_ALPHA);    // Alpha channel
         if (FAILED(m_scene.Initialize()))
         {
             return -1;
