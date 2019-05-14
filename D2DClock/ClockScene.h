@@ -2,7 +2,6 @@
 #include <D2d1.h>
 #include <assert.h>
 #include <unordered_map>
-//#include <map>
 #include "GlobalConst.h"
 
 struct ID2D1Bitmap;
@@ -30,8 +29,6 @@ class ClockScene
     ID2D1Bitmap                 *m_pBitmapClockDial;
     ID2D1Bitmap                 *m_pBitmapClockHour;
     ID2D1Bitmap	                *m_pBitmapClockMinute;
-    //std::map<const std::wstring, ID2D1Bitmap *> m_pBitmapMap;
-    // ÉLÅ[Ç™const std::wstringÇæÇ∆ÇæÇﬂ(unordered_map)
     std::unordered_map<std::wstring, ID2D1Bitmap *> m_pBitmapMap;
     void    DrawClockHandPict(const std::wstring key, float fAngle);
 
