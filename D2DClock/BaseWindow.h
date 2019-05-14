@@ -90,10 +90,10 @@ public:
                 << L"bottom " << workerArea.bottom << L"\n"
                 << L"right " << workerArea.right << L"\n";
 
-            MessageBox(NULL, ss1.str().c_str(), NULL, MB_OK);
+            MessageBox(NULL, ss1.str().c_str(), L"Debug Message", MB_OK);
             std::wstringstream ss2;
             ss2 << L"x : " << x << L"y : " << y;
-            MessageBox(NULL, ss2.str().c_str(), NULL, MB_OK);
+            MessageBox(NULL, ss2.str().c_str(), L"Debug Message", MB_OK);
 #endif
         }
 
