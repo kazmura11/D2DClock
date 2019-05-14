@@ -1,4 +1,4 @@
-#pragma once      // インクルードガードないとダメ
+#pragma once
 namespace GlobalConst {
     const float CLIENT_AREA_SIZE = 219.0f;
     const float WINDOW_SIZE = CLIENT_AREA_SIZE;
