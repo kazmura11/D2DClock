@@ -4,12 +4,12 @@
 #include <locale>
 #include "BaseWindow.h"
 #include "ClockScene.h"
-#include "resource.h"    // リソースファイル
+#include "resource.h"
 
 namespace {
     // Constants 
     const WCHAR WINDOW_NAME[] = L"Analog Clock";
-    const int OFFSET = 12;    // 領域の微調整
+    const int OFFSET = 12;    // area offset
     const PCWSTR CLSS_NM = L"Clock Window Class";
 }
 
@@ -20,11 +20,9 @@ class MainWindow : public BaseWindow<MainWindow>
 {
 private:
     ClockScene   m_scene;
-    // ADD >>>
     HMENU        m_menu;
     HMENU        m_submenu;
     HRGN         m_hRegion;
-    // ADD <<<
 public:
     PCWSTR  ClassName() const override { return CLSS_NM; }
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
@@ -37,25 +35,20 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_CREATE:
-        // ADD >>>
-        SetLayeredWindowAttributes(m_hwnd, 0, 180, LWA_ALPHA);    // αチャンネル使用
-        // ADD <<<
+        SetLayeredWindowAttributes(m_hwnd, 0, 180, LWA_ALPHA);    // Alpha channel
         if (FAILED(m_scene.Initialize()))
         {
             return -1;
         }
-        // ADD >>>
         m_hRegion = CreateEllipticRgn(OFFSET, OFFSET,
             static_cast<int>(GlobalConst::CLIENT_AREA_SIZE) - OFFSET,
             static_cast<int>(GlobalConst::CLIENT_AREA_SIZE) - OFFSET);
         SetWindowRgn(m_hwnd, m_hRegion, TRUE);
 
-        // メニューリソースをロードする
-        // 文字列にしてないのでMAKEINTRESOURCE
+        // Load menu resource
         m_menu = LoadMenu(NULL, MAKEINTRESOURCE(IDR_MENU1));
-        // サブメニューのハンドルを取得する
+        // Get handle of the submenu
         m_submenu = GetSubMenu(m_menu, 0);
-        // ADD <<<
         return 0;
 
     case WM_DESTROY:
@@ -73,47 +66,42 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
 
-    // Direct2Dにこの処理は任せる
+    // Delegate to Direct2D
     case WM_ERASEBKGND:
         return 1;
 
-    // ADD >>>
-    case WM_COMMAND:        // 項目が選択されたとき
+    case WM_COMMAND:        // When the item selected
         switch (LOWORD(wParam))
         {
-        case ID_EXIT:       // 「終了」
+        case ID_EXIT:       // Exit
             SendMessage(m_hwnd, WM_CLOSE, 0, 0);
             break;
         }
         return 0;
 
-    case WM_RBUTTONUP:      // マウスの右ボタンが離されたとき
-        // カーソルの位置を取得する
+    case WM_RBUTTONUP:      // When up right mouse button
+        // Get the cursor position
         pos.x = LOWORD(lParam);
         pos.y = HIWORD(lParam);
 
-        // 取得したカーソル位置を、スクリーン座標に変換する
+        // Convert to screen position
         ClientToScreen(m_hwnd, &pos);
 
-        // ポップアップメニューを表示する
+        // Show popup menu
         TrackPopupMenu(m_submenu, TPM_LEFTALIGN, pos.x, pos.y, 0, m_hwnd, NULL);
         return 0;
 
-    case WM_CLOSE:          // ウィンドウが閉じられるとき
-        // メニューリソースを破棄する
+    case WM_CLOSE:          // When the window closed
         DestroyMenu(m_menu);
         m_menu = NULL;
-        // ウィンドウを閉じる処理はDefWindowProc()に任せる
+        // Delegate to DefWindowProc()
         return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 
-        //マウスの左ボタン押下時の処理
-    case WM_LBUTTONDOWN:
-        //クライアント領域だった場合でも、タイトルバーでクリック
-        //されたことにしてメッセージ送信
+    case WM_LBUTTONDOWN:     // When up left mouse button
+        // Treat as cliking on the title bar
         PostMessage(m_hwnd, WM_NCLBUTTONDOWN, HTCAPTION, lParam);
         return 0;
 
-    // ADD <<<
     default:
         return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
     }
@@ -129,7 +117,7 @@ BOOL InitializeTimer()
     }
 
     LARGE_INTEGER li = {0};
-    // 1000/60ミリ秒を指定つまり1秒を60分割している 1/60秒
+    // 1/60 Sec
     if (!SetWaitableTimer(g_hTimer, &li, (1000/60), NULL, NULL,FALSE))
     {
         CloseHandle(g_hTimer);
@@ -142,9 +130,9 @@ BOOL InitializeTimer()
 
 INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 {
-    std::locale::global(std::locale(""));    // デフォルトロケールを設定
+    std::locale::global(std::locale(""));
 #ifdef _DEBUG
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);   // メモリリーク検出
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
     if (FAILED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
     {
@@ -159,9 +147,7 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 
     MainWindow win;
 
-    // サイズ変更不可にする
     //if (!win.Create(WINDOW_NAME, WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX)))
-    // ポップアップ
     if (!win.Create(WINDOW_NAME, WS_POPUP))
     {
         return 0;
