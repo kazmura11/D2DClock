@@ -1,0 +1,8 @@
+.vs/
+*.log
+*.tlog
+*.ilk
+*.obj
+Debug/
+Release/
+
